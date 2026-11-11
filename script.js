@@ -211,3 +211,93 @@ function buildLibraryReport(data) {
 
 const result = buildLibraryReport(libraryData);
 console.log(result)
+
+
+console.log("-----------------------------------Q3-----------------------------------");
+
+
+function prepareReminderRequest(data, loanId) {
+
+    const { books, readers, loans } = data;
+
+    function checkLoanId(loan) {
+        return loan.id === loanId;
+    }
+    const findLoanId = loans.find(checkLoanId)
+    if (!findLoanId) {
+        return null + " - loan not found";
+    }
+
+    if (findLoanId.returned !== false) {
+        return null + " - already returned";
+
+    }
+
+    function findBookById(book) {
+        return book.id === findLoanId.bookId
+    }
+    const findBook = books.find(findBookById)
+
+    if (!findBook) {
+        return null + "- book not found";
+    }
+
+    const delayLoan = findLoanId.elapsedDays - findBook?.policy?.loanDays;
+
+    let isDelay = null;
+
+    if (delayLoan > 0) {
+        isDelay = true;
+    }
+
+    if (!isDelay) {
+        return null + " - not overdue";
+    }
+
+    function findReaderById(reader) {
+        return reader.id === findLoanId.readerId;
+    }
+    const findReader = readers.find(findReaderById)
+
+    if (!findReader) {
+        return null + " - reader not found"
+    }
+
+    if (!findReader?.contact?.email) {
+        return null + " - no email ";
+
+    }
+
+    const newLoanObj = {
+        ...findLoanId,
+        reminder: {
+            ...findLoanId.reminder,
+            requested: true
+        }
+    }
+    return newLoanObj
+
+
+
+}
+// console.log("L1: ");
+// console.log(prepareReminderRequest(libraryData, "L1"))
+// console.log("L2: ");
+// console.log(prepareReminderRequest(libraryData, "L2"))
+// console.log("L3: ");
+// console.log(prepareReminderRequest(libraryData, "L3"))
+// console.log("L4: ");
+// console.log(prepareReminderRequest(libraryData, "L4"))
+// console.log("L5: ");
+// console.log(prepareReminderRequest(libraryData, "L5"))
+// console.log("L6: ");
+// console.log(prepareReminderRequest(libraryData, "L6"))
+
+
+for (let i = 1; i < 7; i++) {
+    const id = "L" + i
+    console.log(id + ":");
+    console.log(prepareReminderRequest(libraryData, id));
+}
+console.log("L99: ");
+console.log(prepareReminderRequest(libraryData, "L99"))
